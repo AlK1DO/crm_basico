@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { useAuth } from '../hooks/useAuth';
+import { useDatasetContext } from '../context/DatasetContext';
 import styles from './DashboardLayout.module.css';
 
 interface NavItem { to: string; label: string; icon: React.ReactNode; }
@@ -41,9 +42,15 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function DashboardLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, onLogout } = useAuth();
+  const { clearAll } = useDatasetContext();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Limpia los datasets al cerrar sesión
+  useEffect(() => {
+    return onLogout(clearAll);
+  }, [onLogout, clearAll]);
 
   const handleLogout = async () => {
     await logout();
@@ -58,13 +65,7 @@ export default function DashboardLayout() {
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarHeader}>
           <div className={styles.brand}>
-            <div className={styles.brandIcon}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round"
-                  d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-              </svg>
-            </div>
-            <span className={styles.brandName}>BigData CRM</span>
+            <span className={styles.brandName}>CRM</span>
           </div>
         </div>
 
@@ -80,7 +81,6 @@ export default function DashboardLayout() {
 
         <div className={styles.sidebarFooter}>
           <div className={styles.userInfo}>
-            <div className={styles.avatar}>{user?.email?.[0].toUpperCase() ?? 'U'}</div>
             <div className={styles.userDetails}>
               <span className={styles.userName}>{user?.displayName ?? 'Usuario'}</span>
               <span className={styles.userEmail}>{user?.email}</span>

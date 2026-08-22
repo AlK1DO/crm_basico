@@ -7,7 +7,7 @@ import { useDatasetContext } from '../../context/DatasetContext';
 import type { Dataset } from '../../hooks/useDatasets';
 import styles from './Dashboard.module.css';
 
-const CHART_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
+const CHART_COLORS = ['#111827', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#1f2937'];
 const CHART_LABELS: Record<string, string> = { bar: 'Gráfica de barras', line: 'Gráfica de líneas', pie: 'Gráfica de pastel' };
 
 type ChartType = 'bar' | 'line' | 'pie';
@@ -37,9 +37,24 @@ export default function Reports() {
 
   const numericColumns = useMemo(() => {
     if (!selectedDataset) return [];
-    return selectedDataset.columns.filter((col) =>
-      selectedDataset.rows.slice(0, 20).some((r) => r[col] !== '' && !isNaN(Number(r[col])))
-    );
+    return selectedDataset.columns.filter((col) => {
+      const sample = selectedDataset.rows
+        .slice(0, 20)
+        .map((r) => r[col])
+        .filter((v) => v !== '' && v != null);
+
+      if (sample.length === 0) return false;
+
+      const numericCount = sample.filter((v) => !isNaN(Number(v))).length;
+      if (numericCount / sample.length < 0.8) return false;
+
+      // Excluir columnas donde los números tienen más de 7 dígitos
+      // (teléfonos, IDs, códigos largos — no son métricas útiles)
+      const avgLength = sample.reduce((acc, v) => acc + String(v).replace(/\D/g, '').length, 0) / sample.length;
+      if (avgLength > 7) return false;
+
+      return true;
+    });
   }, [selectedDataset]);
 
   const chartData = useMemo(() => {
@@ -135,23 +150,23 @@ export default function Reports() {
           <div className={styles.chartBox}>
             <ResponsiveContainer width="100%" height="100%">
               {chartType === 'bar' ? (
-                <BarChart data={chartData} margin={{ top: 4, right: 16, bottom: 40, left: 0 }}>
+                <BarChart key={`${selectedId}-${labelCol}-${valueCol}`} data={chartData} margin={{ top: 4, right: 16, bottom: 40, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-35} textAnchor="end" interval={0} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip /><Legend />
-                  <Bar dataKey="value" name={valueCol} fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="value" name={valueCol} fill="#111827" radius={[4, 4, 0, 0]} />
                 </BarChart>
               ) : chartType === 'line' ? (
-                <LineChart data={chartData} margin={{ top: 4, right: 16, bottom: 40, left: 0 }}>
+                <LineChart key={`${selectedId}-${labelCol}-${valueCol}`} data={chartData} margin={{ top: 4, right: 16, bottom: 40, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-35} textAnchor="end" interval={0} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip /><Legend />
-                  <Line type="monotone" dataKey="value" name={valueCol} stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="value" name={valueCol} stroke="#111827" strokeWidth={2} dot={{ r: 3 }} />
                 </LineChart>
               ) : (
-                <PieChart>
+                <PieChart key={`${selectedId}-${labelCol}-${valueCol}`}>
                   <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}
                     label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                     {chartData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}

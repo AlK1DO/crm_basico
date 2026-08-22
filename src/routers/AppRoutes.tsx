@@ -34,13 +34,15 @@ export default function AppRoutes() {
       </Route>
 
       <Route element={<Mainlayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/inicio" element={<Home />} />
         <Route path="/nosotros" element={<About />} />
         <Route path="/servicios" element={<Service />} />
         <Route path="/contacto" element={<Contact />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Redirige la raíz y cualquier ruta desconocida al login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

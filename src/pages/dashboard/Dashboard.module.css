@@ -44,14 +44,14 @@
   display: flex;
   gap: 14px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f3f4f6;
+  border: 1px solid #e5e7eb;
 }
 
 .statIcon {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #eef2ff;
+  background: #f0f2f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,7 +61,7 @@
 .statIcon svg {
   width: 20px;
   height: 20px;
-  color: #6366f1;
+  color: #374151;
 }
 
 .statBody {
@@ -86,11 +86,9 @@
 
 .statChange {
   font-size: 12px;
+  color: #6b7280;
   margin: 0;
 }
-
-.positive { color: #10b981; }
-.negative { color: #ef4444; }
 
 /* ─── Section ────────────────────────────────────────────────────────────────── */
 
@@ -127,19 +125,19 @@
   font-weight: 500;
   color: #374151;
   text-decoration: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
   cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .quickCard svg {
   width: 18px;
   height: 18px;
-  color: #6366f1;
+  color: #374151;
 }
 
 .quickCard:hover {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  background: #f0f2f5;
+  border-color: #d1d5db;
 }
 
 /* ─── Card ───────────────────────────────────────────────────────────────────── */
@@ -149,7 +147,7 @@
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f3f4f6;
+  border: 1px solid #e5e7eb;
 }
 
 .cardTitle {
@@ -168,13 +166,13 @@
   text-align: center;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
-  background: #fafafa;
+  background: #f9fafb;
 }
 
 .dropzone:hover,
 .dropzoneActive {
-  border-color: #6366f1;
-  background: #eef2ff;
+  border-color: #111827;
+  background: #f0f2f5;
 }
 
 .dropzoneIcon {
@@ -185,7 +183,7 @@
 }
 
 .dropzoneActive .dropzoneIcon {
-  color: #6366f1;
+  color: #111827;
 }
 
 .dropzoneText {
@@ -231,7 +229,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #eef2ff;
+  background: #f0f2f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,7 +239,7 @@
 .datasetIcon svg {
   width: 18px;
   height: 18px;
-  color: #6366f1;
+  color: #374151;
 }
 
 .datasetMeta {
@@ -276,8 +274,8 @@
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
-  background: #ecfdf5;
-  color: #059669;
+  background: #f0f2f5;
+  color: #374151;
 }
 
 .btnIcon {
@@ -291,7 +289,7 @@
   align-items: center;
   justify-content: center;
   color: #6b7280;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .btnIcon svg {
@@ -300,9 +298,9 @@
 }
 
 .btnIcon:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #ef4444;
+  background: #f0f2f5;
+  border-color: #d1d5db;
+  color: #111827;
 }
 
 /* ─── Table ──────────────────────────────────────────────────────────────────── */
@@ -385,11 +383,12 @@
   background: #fff;
   outline: none;
   cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
 }
 
 .btnOutline {
@@ -404,7 +403,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: border-color 0.15s, background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .btnOutline svg {
@@ -413,9 +412,9 @@
 }
 
 .btnOutline:hover {
-  border-color: #6366f1;
-  background: #eef2ff;
-  color: #6366f1;
+  border-color: #111827;
+  background: #f0f2f5;
+  color: #111827;
 }
 
 .btnPrimary {
@@ -425,7 +424,7 @@
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  background: #6366f1;
+  background: #111827;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -439,7 +438,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #5457e0;
+  background: #1f2937;
 }
 
 .btnPrimary:disabled {
@@ -470,12 +469,12 @@
 }
 
 .tab:hover {
-  color: #374151;
+  color: #111827;
 }
 
 .tabActive {
-  color: #6366f1;
-  border-bottom-color: #6366f1;
+  color: #111827;
+  border-bottom-color: #111827;
   font-weight: 600;
 }
 
@@ -489,8 +488,8 @@
 /* ─── Cleaning result ────────────────────────────────────────────────────────── */
 
 .resultBox {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 16px 20px;
 }
@@ -498,7 +497,7 @@
 .resultTitle {
   font-size: 14px;
   font-weight: 600;
-  color: #15803d;
+  color: #111827;
   margin: 0 0 8px;
 }
 
@@ -513,7 +512,7 @@
 
 .resultList li {
   font-size: 13px;
-  color: #166534;
+  color: #374151;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -521,6 +520,6 @@
 
 .resultList li::before {
   content: '✓';
-  color: #16a34a;
+  color: #111827;
   font-weight: 700;
 }

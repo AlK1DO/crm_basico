@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Papa from 'papaparse';
 
 export interface Dataset {
@@ -10,9 +10,44 @@ export interface Dataset {
   size: string;
 }
 
+// Forma serializable para localStorage (uploadedAt como string ISO)
+interface StoredDataset extends Omit<Dataset, 'uploadedAt'> {
+  uploadedAt: string;
+}
+
+const STORAGE_KEY = 'crm_datasets';
+
+function loadFromStorage(): Dataset[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed: StoredDataset[] = JSON.parse(raw);
+    return parsed.map((d) => ({ ...d, uploadedAt: new Date(d.uploadedAt) }));
+  } catch {
+    return [];
+  }
+}
+
+function saveToStorage(datasets: Dataset[]): void {
+  try {
+    const serializable: StoredDataset[] = datasets.map((d) => ({
+      ...d,
+      uploadedAt: d.uploadedAt.toISOString(),
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
+  } catch {
+    // Si localStorage está lleno (datasets muy grandes) no romper la app
+  }
+}
+
 export function useDatasets() {
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [datasets, setDatasets] = useState<Dataset[]>(loadFromStorage);
   const [loading, setLoading] = useState(false);
+
+  // Sincroniza con localStorage cada vez que cambian los datasets
+  useEffect(() => {
+    saveToStorage(datasets);
+  }, [datasets]);
 
   const parseFile = useCallback((file: File): Promise<Dataset> => {
     return new Promise((resolve, reject) => {
@@ -42,7 +77,6 @@ export function useDatasets() {
       try {
         const fileArray = Array.from(files);
         const parsed = await Promise.all(fileArray.map(parseFile));
-        // Agregar al final sin borrar los anteriores
         setDatasets((prev) => [...prev, ...parsed]);
       } finally {
         setLoading(false);
@@ -55,7 +89,10 @@ export function useDatasets() {
     setDatasets((prev) => prev.filter((d) => d.id !== id));
   }, []);
 
-  const clearAll = useCallback(() => setDatasets([]), []);
+  const clearAll = useCallback(() => {
+    setDatasets([]);
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
 
   return { datasets, loading, addDatasets, removeDataset, clearAll };
 }

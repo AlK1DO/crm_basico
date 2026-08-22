@@ -9,9 +9,10 @@
 /* ─── Sidebar ────────────────────────────────────────────────────────────────── */
 
 .sidebar {
-  width: 240px;
+  width: 220px;
   min-height: 100vh;
-  background: #111827;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -21,7 +22,7 @@
 
 .sidebarHeader {
   padding: 24px 20px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .brand {
@@ -33,7 +34,7 @@
 .brandIcon {
   width: 34px;
   height: 34px;
-  background: #6366f1;
+  background: #111827;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -49,7 +50,7 @@
 .brandName {
   font-size: 15px;
   font-weight: 700;
-  color: #ffffff;
+  color: #111827;
   letter-spacing: 0.01em;
 }
 
@@ -60,7 +61,7 @@
   padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .navItem {
@@ -71,23 +72,24 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #9ca3af;
+  color: #6b7280;
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
 
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
+  background: #f0f2f5;
+  color: #111827;
 }
 
 .navItemActive {
-  background: #6366f1;
+  background: #111827;
   color: #ffffff;
 }
 
 .navItemActive:hover {
-  background: #5457e0;
+  background: #1f2937;
+  color: #ffffff;
 }
 
 .navIcon {
@@ -107,7 +109,7 @@
 
 .sidebarFooter {
   padding: 16px 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -125,7 +127,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #6366f1;
+  background: #111827;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -144,7 +146,7 @@
 .userName {
   font-size: 13px;
   font-weight: 600;
-  color: #f9fafb;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -152,7 +154,7 @@
 
 .userEmail {
   font-size: 11px;
-  color: #6b7280;
+  color: #9ca3af;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -168,7 +170,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: #9ca3af;
   transition: background 0.15s, color 0.15s;
   flex-shrink: 0;
 }
@@ -179,8 +181,8 @@
 }
 
 .logoutBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ef4444;
+  background: #f0f2f5;
+  color: #111827;
 }
 
 /* ─── Main area ──────────────────────────────────────────────────────────────── */
@@ -236,6 +238,7 @@
   flex: 1;
   padding: 28px 32px;
   overflow-y: auto;
+  background: #f0f2f5;
 }
 
 /* ─── Overlay ────────────────────────────────────────────────────────────────── */
@@ -244,7 +247,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 99;
 }
 

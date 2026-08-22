@@ -19,9 +19,8 @@ export default function Login() {
       await requestOTP(email);
       toast.success('Código OTP enviado a tu correo.');
       navigate('/verificar-otp');
-    } catch (err) {
-      console.error('Error al enviar OTP:', err);
-      toast.error('No se pudo enviar el código. Revisa la consola para más detalles.');
+    } catch {
+      toast.error('No se pudo enviar el código. Inténtalo nuevamente.');
     } finally {
       setLoading(false);
     }
@@ -38,7 +37,7 @@ export default function Login() {
           </svg>
         </div>
 
-        <h1 className={styles.title}>Welcome back</h1>
+        <h1 className={styles.title}>Bienvenido</h1>
         <p className={styles.subtitle}>Ingresa tu correo para recibir tu código de acceso</p>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
