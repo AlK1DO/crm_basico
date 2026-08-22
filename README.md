@@ -1,75 +1,123 @@
-# React + TypeScript + Vite
+# BigData CRM
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Plataforma web para gestión y análisis de datasets CSV. Permite cargar archivos, limpiar datos y generar reportes con gráficas interactivas. El acceso está protegido mediante autenticación OTP por correo electrónico.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tecnologías
 
-## React Compiler
+| Tecnología | Uso |
+|---|---|
+| React 19 + TypeScript | Framework principal |
+| Vite 8 | Bundler y servidor de desarrollo |
+| Firebase Auth | Manejo de sesión (`signInAnonymously`) |
+| EmailJS | Envío del código OTP por correo |
+| PapaParse | Parseo de archivos CSV |
+| Recharts | Gráficas interactivas |
+| React Router v8 | Navegación y rutas protegidas |
+| React Toastify | Notificaciones |
+| CSS Modules | Estilos por componente |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Flujo de autenticación
 
 ```
+Ingresa correo
+     ↓
+Genera OTP de 6 dígitos (en memoria)
+     ↓
+EmailJS envía el código al correo
+     ↓
+Usuario ingresa el código
+     ↓
+Validación: existe · no expirado (10 min) · un solo uso
+     ↓
+signInAnonymously(Firebase) → acceso al CRM
+```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- El OTP se almacena únicamente en memoria del frontend
+- No se usa Firestore ni ninguna base de datos para el OTP
+- Al cerrar sesión los datasets se eliminan de localStorage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Funcionalidades
 
+- **Datasets** — Carga uno o varios archivos CSV por drag & drop o selección. Vista previa de los primeros 10 registros.
+- **Limpieza** — Elimina duplicados, filas vacías, normaliza espacios y texto. Descarga el CSV limpio.
+- **Reportes** — Genera gráficas de barras, líneas o pastel a partir de cualquier dataset cargado. Incluye estadísticas (suma, promedio, mínimo, máximo, mediana).
+
+---
+
+## Instalación local
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/tu-usuario/tu-repo.git
+cd tu-repo
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Crear el archivo de variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales
+
+# 4. Iniciar en desarrollo
+npm run dev
+```
+
+---
+
+## Variables de entorno
+
+Crea un archivo `.env` en la raíz con las siguientes variables:
+
+```env
+VITE_EMAILJS_SERVICE_ID=tu_service_id
+VITE_EMAILJS_TEMPLATE_ID=tu_template_id
+VITE_EMAILJS_PUBLIC_KEY=tu_public_key
+```
+
+> El archivo `.env` está incluido en `.gitignore` y nunca debe subirse al repositorio.
+
+---
+
+## Deploy en Vercel
+
+1. Sube el código a GitHub
+2. Conecta el repositorio en [vercel.com](https://vercel.com)
+3. Selecciona la rama a deployar
+4. En **Settings → Environment Variables** agrega las 3 variables `VITE_*`
+5. Deploy
+
+El archivo `vercel.json` ya está configurado para que el routing de React funcione correctamente en Vercel.
+
+---
+
+## Scripts disponibles
+
+```bash
+npm run dev       # Servidor de desarrollo
+npm run build     # Build de producción
+npm run preview   # Vista previa del build
+npm run lint      # Linter
+```
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── context/        # AuthContext, DatasetContext
+├── firebase/       # config, emailService, otpService
+├── hooks/          # useAuth, useDatasets
+├── layouts/        # DashboardLayout, Mainlayout
+├── pages/
+│   ├── auth/       # Login, OtpVerification
+│   └── dashboard/  # DashboardHome, Datasets, DataCleaning, Reports
+├── routers/        # AppRoutes, ProtectedRoute
+└── utils/          # firebaseError
 ```
