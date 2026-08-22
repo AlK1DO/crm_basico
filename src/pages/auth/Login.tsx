@@ -60,8 +60,8 @@ export default function Login() {
         </form>
 
         <p className={styles.footer}>
-          ¿No tienes acceso?{' '}
-          <span className={styles.footerBold}>Contacta a tu administrador</span>
+          Revisa tu correo{' '}
+          <span className={styles.footerBold}>PARA PODER VER TU CODIGO</span>
         </p>
       </div>
     </div>
