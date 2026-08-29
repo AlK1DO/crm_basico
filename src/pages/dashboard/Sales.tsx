@@ -155,7 +155,7 @@ function DatasetModule({ title, accentColor, emptyMsg }: {
                   <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
                   <Tooltip
                     cursor={{ fill: 'rgba(0,0,0,0.04)' }}
-                    formatter={(v: number) => [v.toLocaleString('es-MX'), valueCol]}
+                    formatter={(v) => [Number(v).toLocaleString('es-MX'), valueCol]}
                   />
                   <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                     {barData.map((_, i) => <Cell key={i} fill={SALES_COLORS[i % SALES_COLORS.length]} />)}
@@ -184,7 +184,7 @@ function DatasetModule({ title, accentColor, emptyMsg }: {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7280' }} tickFormatter={(v) => String(v).slice(0, 8)} interval="preserveStartEnd" />
                   <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v: number) => [v.toLocaleString('es-MX'), valueCol]} />
+                  <Tooltip formatter={(v) => [Number(v).toLocaleString('es-MX'), valueCol]} />
                   <Line type="monotone" dataKey="value" stroke={accentColor} strokeWidth={2.5} dot={{ r: 3, fill: accentColor }} activeDot={{ r: 5 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -391,7 +391,7 @@ function InsightsModule() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7280' }} interval={0} />
                 <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number, n: string) => [v.toLocaleString('es-MX'), n === 'A' ? `CSV A · ${colA}` : `CSV B · ${colB}`]} />
+                <Tooltip formatter={(v, n) => [Number(v).toLocaleString('es-MX'), n === 'A' ? `CSV A · ${colA}` : `CSV B · ${colB}`]} />
                 <Bar dataKey="A" fill={COMPARE_COLORS[0]} radius={[4, 4, 0, 0]} name="A" />
                 <Bar dataKey="B" fill={COMPARE_COLORS[1]} radius={[4, 4, 0, 0]} name="B" />
               </BarChart>

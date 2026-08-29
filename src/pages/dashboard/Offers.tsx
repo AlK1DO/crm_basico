@@ -216,7 +216,7 @@ export default function Offers() {
                   <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
                   <Tooltip
                     cursor={{ fill: 'rgba(0,0,0,0.04)' }}
-                    formatter={(v: number) => [v.toLocaleString('es-MX'), valueCol]}
+                    formatter={(v) => [Number(v).toLocaleString('es-MX'), valueCol]}
                   />
                   <Bar dataKey="value" name={valueCol} radius={[6, 6, 0, 0]}>
                     {barData.map((_, i) => (
