@@ -11,6 +11,8 @@ import DashboardHome from '../pages/dashboard/DashboardHome';
 import Datasets from '../pages/dashboard/Datasets';
 import DataCleaning from '../pages/dashboard/DataCleaning';
 import Reports from '../pages/dashboard/Reports';
+import Sales from '../pages/dashboard/Sales';
+import Offers from '../pages/dashboard/Offers';
 import ProtectedRoute from './ProtectedRoute';
 
 export default function AppRoutes() {
@@ -31,6 +33,8 @@ export default function AppRoutes() {
         <Route path="datasets" element={<Datasets />} />
         <Route path="limpieza" element={<DataCleaning />} />
         <Route path="reportes" element={<Reports />} />
+        <Route path="ventas" element={<Sales />} />
+        <Route path="ofertas" element={<Offers />} />
       </Route>
 
       <Route element={<Mainlayout />}>
