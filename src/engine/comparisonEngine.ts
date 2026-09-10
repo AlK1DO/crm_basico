@@ -9,11 +9,10 @@
  * Si ambos tienen fecha, también compara tendencias.
  */
 
-import type { Dataset, CategoryBreakdown, Insight, InsightPriority } from '../types';
+import type { Dataset, Insight, InsightPriority } from '../types';
 import { analyzeDataset } from './analysisEngine';
 import { groupByCategory, parseNumeric } from './metricsCalculator';
 import { fmtNum } from './insightEngine';
-import { findColumnByType } from './columnDetector';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 

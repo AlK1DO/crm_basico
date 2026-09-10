@@ -939,6 +939,9 @@ export default function Sales() {
             </div>
           )}
 
+          {/* ── TAB COMPARACIÓN ── */}
+          {tab === 'comparacion' && <ComparisonTab datasets={datasets} />}
+
           {/* ── TAB ANÁLISIS PERSONALIZADO ── */}
           {tab === 'personalizado' && <CustomAnalysis dataset={selectedDataset} />}
         </>
