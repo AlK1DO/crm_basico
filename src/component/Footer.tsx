@@ -1,7 +1,7 @@
 function Footer() {
     return (
         <footer className="footer">
-            <p>© 2026 Mi proyecto. Todos los derechos reservados</p>
+            <p>© 2026 PharmaCRM. Todos los derechos reservados</p>
         </footer>
     );
 }
