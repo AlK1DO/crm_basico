@@ -9,9 +9,9 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="container navbar-content">
-        <h1 className="logo">Mi proyecto</h1>
+        <h1 className="logo">PharmaCRM</h1>
         <nav className="nav-links">
-          <NavLink to="/" end className={navClass}>Inicio</NavLink>
+          <NavLink to="/inicio" end className={navClass}>Inicio</NavLink>
           <NavLink to="/nosotros" className={navClass}>Nosotros</NavLink>
           <NavLink to="/servicios" className={navClass}>Servicios</NavLink>
           <NavLink to="/contacto" className={navClass}>Contacto</NavLink>

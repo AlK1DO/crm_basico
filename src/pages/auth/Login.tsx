@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './Auth.module.css';
@@ -19,8 +19,12 @@ export default function Login() {
       await requestOTP(email);
       toast.success('Código OTP enviado a tu correo.');
       navigate('/verificar-otp');
-    } catch {
-      toast.error('No se pudo enviar el código. Inténtalo nuevamente.');
+    } catch (err) {
+      if (err instanceof Error && err.message === 'not_admin') {
+        toast.error('Este correo no está autorizado como Administrador.');
+      } else {
+        toast.error('No se pudo enviar el código. Inténtalo nuevamente.');
+      }
     } finally {
       setLoading(false);
     }
@@ -61,8 +65,25 @@ export default function Login() {
 
         <p className={styles.footer}>
           Revisa tu correo{' '}
-          <span className={styles.footerBold}>PARA PODER VER TU CODIGO</span>
+          <span className={styles.footerBold}>para ver tu código</span>
         </p>
+
+        <div style={{
+          marginTop: 16, paddingTop: 16, borderTop: '1px solid #e5e7eb',
+          width: '100%', textAlign: 'center',
+        }}>
+          <p style={{ fontSize: 13, color: '#9ca3af', margin: '0 0 8px' }}>
+            ¿Eres analista?
+          </p>
+          <Link
+            to="/acceso-analista"
+            style={{
+              fontSize: 13, fontWeight: 600, color: '#6366f1', textDecoration: 'none',
+            }}
+          >
+            Acceso con código de analista →
+          </Link>
+        </div>
       </div>
     </div>
   );
