@@ -240,7 +240,6 @@ function ComparisonTab({ datasets }: { datasets: Dataset[] }) {
   const [idA, setIdA] = useState('');
   const [idB, setIdB] = useState('');
   const [useClean, setUseClean] = useState(true);
-  const [showAllInsights, setShowAllInsights] = useState(false);
   const [expandedInsights, setExpandedInsights] = useState<Set<string>>(new Set());
 
   const dsA = datasets.find((d) => d.id === idA) ?? null;
@@ -259,60 +258,30 @@ function ComparisonTab({ datasets }: { datasets: Dataset[] }) {
     });
   };
 
-  const displayedInsights = showAllInsights
-    ? (result?.insights ?? [])
-    : (result?.insights ?? []).slice(0, 4);
-
-  // Datos para gráfico de barras agrupadas (top 10 por cambio absoluto)
-  const barData = useMemo(() => {
+  const comparisonData = useMemo(() => {
     if (!result) return [];
     return result.categoryComparisons
-      .filter((c) => !c.onlyInA && !c.onlyInB && (c.totalA > 0 || c.totalB > 0))
-      .slice(0, 10)
+      .filter((c) => !c.onlyInA && !c.onlyInB)
+      .slice(0, 8)
       .map((c) => ({
-        name: c.name.slice(0, 14),
-        [result.datasetAName.replace('.csv', '').slice(0, 12)]: c.totalA,
-        [result.datasetBName.replace('.csv', '').slice(0, 12)]: c.totalB,
+        name: c.name.slice(0, 18),
+        a: c.totalA,
+        b: c.totalB,
       }));
   }, [result]);
 
-  const keyA = result ? result.datasetAName.replace('.csv', '').slice(0, 12) : 'A';
-  const keyB = result ? result.datasetBName.replace('.csv', '').slice(0, 12) : 'B';
-
-  // Datos para gráfico de ganadores/perdedores
-  const gainersData = result?.topGainers.map((c) => ({
-    name: c.name.slice(0, 14),
-    cambio: Number(c.diffPct.toFixed(1)),
-  })) ?? [];
-
-  const losersData = result?.topLosers.map((c) => ({
-    name: c.name.slice(0, 14),
-    cambio: Number(c.diffPct.toFixed(1)),
-  })) ?? [];
-
-  if (datasets.length < 2) {
-    return (
-      <div className={styles.card}>
-        <EmptyState message="Necesitas al menos 2 datasets cargados para comparar." />
-      </div>
-    );
-  }
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-      {/* Selector */}
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>Seleccionar datasets a comparar</h2>
+        <h2 className={styles.cardTitle}>Comparar ventas entre dos CSV</h2>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#6b7280' }}>DATASET A</label>
-            <select className={styles.select} value={idA}
-              onChange={(e) => { setIdA(e.target.value); if (e.target.value === idB) setIdB(''); }}>
+            <select className={styles.select} value={idA} onChange={(e) => setIdA(e.target.value)}>
               <option value="">— Selecciona —</option>
               {datasets.map((ds) => (
                 <option key={ds.id} value={ds.id} disabled={ds.id === idB}>
-                  {ds.name}{ds.isCleaned ? ' ✓' : ''} ({ds.rowCount.toLocaleString()} filas)
+                  {ds.name}{ds.isCleaned ? ' ✓' : ''}
                 </option>
               ))}
             </select>
@@ -322,205 +291,81 @@ function ComparisonTab({ datasets }: { datasets: Dataset[] }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#6b7280' }}>DATASET B</label>
-            <select className={styles.select} value={idB}
-              onChange={(e) => setIdB(e.target.value)}>
+            <select className={styles.select} value={idB} onChange={(e) => setIdB(e.target.value)}>
               <option value="">— Selecciona —</option>
               {datasets.map((ds) => (
                 <option key={ds.id} value={ds.id} disabled={ds.id === idA}>
-                  {ds.name}{ds.isCleaned ? ' ✓' : ''} ({ds.rowCount.toLocaleString()} filas)
+                  {ds.name}{ds.isCleaned ? ' ✓' : ''}
                 </option>
               ))}
             </select>
           </div>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', paddingBottom: 2 }}>
-            <input type="checkbox" checked={useClean}
-              onChange={(e) => setUseClean(e.target.checked)}
-              style={{ accentColor: '#6366f1' }} />
-            Usar datos limpios si disponibles
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: 'pointer', paddingBottom: 2 }}>
+            <input type="checkbox" checked={useClean} onChange={(e) => setUseClean(e.target.checked)} style={{ accentColor: '#6366f1' }} />
+            Usar datos limpios si están disponibles
           </label>
         </div>
 
         {dsA && dsB && dsA.id === dsB.id && (
-          <p style={{ marginTop: 10, fontSize: 13, color: '#dc2626' }}>
-            Selecciona dos datasets distintos.
-          </p>
+          <p style={{ margin: '12px 0 0', fontSize: 13, color: '#dc2626' }}>Selecciona dos CSV distintos para comparar.</p>
         )}
       </div>
 
       {!result && dsA && dsB && (
         <div className={styles.card}>
-          <EmptyState message="Selecciona dos datasets distintos para iniciar la comparación." />
+          <EmptyState message="Selecciona dos CSV distintos para iniciar la comparación de ventas por categoría." />
         </div>
       )}
 
       {result && (
         <>
-          {/* Advertencias */}
-          {result.warnings.map((w, i) => (
-            <div key={i} style={{ padding: '10px 16px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fde68a', fontSize: 13, color: '#92400e' }}>
-              ℹ️ {w}
-            </div>
-          ))}
-
-          {/* KPIs lado a lado */}
           <div className={styles.card}>
-            <h2 className={styles.cardTitle}>KPIs comparados</h2>
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Métrica</th>
-                    <th style={{ color: CHART_PALETTE.primary }}>{result.datasetAName.replace('.csv','').slice(0,20)}</th>
-                    <th style={{ color: CHART_PALETTE.success }}>{result.datasetBName.replace('.csv','').slice(0,20)}</th>
-                    <th>Diferencia</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.kpiDiffs.map((k) => (
-                    <tr key={k.label}>
-                      <td style={{ fontWeight: 600 }}>{k.label}</td>
-                      <td>{String(k.valueA)}</td>
-                      <td>{String(k.valueB)}</td>
-                      <td>
-                        {k.diffPct !== null ? (
-                          <span style={{
-                            fontWeight: 700,
-                            color: k.direction === 'up' ? '#16a34a' : k.direction === 'down' ? '#dc2626' : '#6b7280',
-                          }}>
-                            {k.direction === 'up' ? '↑' : k.direction === 'down' ? '↓' : '→'}{' '}
-                            {k.direction !== 'flat' ? `${k.diffPct > 0 ? '+' : ''}${k.diffPct.toFixed(1)}%` : 'sin cambio'}
-                          </span>
-                        ) : '—'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <h2 className={styles.cardTitle}>Resumen de ventas comparadas</h2>
+            <div className={styles.statsGrid}>
+              {result.kpiDiffs.slice(0, 4).map((k) => (
+                <div key={k.label} className={styles.statCard}>
+                  <div className={styles.statBody}>
+                    <p className={styles.statLabel}>{k.label}</p>
+                    <p className={styles.statValue} style={{ fontSize: 18 }}>
+                      {String(k.valueA)} → {String(k.valueB)}
+                    </p>
+                    <p className={styles.statChange}>
+                      {k.diffPct !== null ? `${k.diffPct > 0 ? '+' : ''}${k.diffPct.toFixed(1)}%` : 'Sin comparación'}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Gráfico 1: Barras agrupadas top productos comunes */}
-          {barData.length > 0 && (
+          {comparisonData.length > 0 && (
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Ventas por producto — A vs B</h2>
+              <h2 className={styles.cardTitle}>Comparación por categoría de ventas</h2>
               <p style={{ fontSize: 12, color: '#9ca3af', margin: '-8px 0 12px' }}>
-                Top 10 productos comunes en ambos datasets
+                Enfoque exclusivo en ventas y categorías para evaluar rendimiento entre ambos CSV.
               </p>
-              <div style={{ height: 300 }}>
+              <div style={{ height: 320 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} margin={{ top: 4, right: 16, bottom: 24, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} />
-                    <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => fmtNum(v)} />
-                    <Tooltip formatter={(v, name) => [formatTooltipValue(Number(v)), name]} />
+                  <BarChart data={comparisonData} margin={{ top: 4, right: 24, bottom: 24, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
+                    <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => fmtNum(v)} />
+                    <Tooltip formatter={(v, name) => [formatTooltipValue(Number(v), undefined), name === 'a' ? result.datasetAName.replace(/\.csv$/i, '') : result.datasetBName.replace(/\.csv$/i, '')]} />
                     <Legend />
-                    <Bar dataKey={keyA} fill={CHART_PALETTE.primary} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey={keyB} fill={CHART_PALETTE.success} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="a" name={result.datasetAName.replace(/\.csv$/i, '')} fill={CHART_PALETTE.primary} radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="b" name={result.datasetBName.replace(/\.csv$/i, '')} fill={CHART_PALETTE.success} radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
           )}
 
-          {/* Gráfico 2 y 3: Ganadores y perdedores */}
-          {(gainersData.length > 0 || losersData.length > 0) && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
-              {gainersData.length > 0 && (
-                <div className={styles.card}>
-                  <h2 className={styles.cardTitle}>Mayores crecimientos ↑</h2>
-                  <p style={{ fontSize: 12, color: '#9ca3af', margin: '-8px 0 12px' }}>
-                    Productos con mayor aumento de A a B
-                  </p>
-                  <div style={{ height: 240 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={gainersData} layout="vertical" margin={{ top: 4, right: 40, bottom: 4, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
-                        <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => `+${v}%`} />
-                        <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={90} />
-                        <Tooltip formatter={(v) => [`+${v}%`, 'Crecimiento']} />
-                        <Bar dataKey="cambio" radius={[0, 6, 6, 0]} fill={CHART_PALETTE.success} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              )}
-
-              {losersData.length > 0 && (
-                <div className={styles.card}>
-                  <h2 className={styles.cardTitle}>Mayores caídas ↓</h2>
-                  <p style={{ fontSize: 12, color: '#9ca3af', margin: '-8px 0 12px' }}>
-                    Productos con mayor reducción de A a B
-                  </p>
-                  <div style={{ height: 240 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={losersData} layout="vertical" margin={{ top: 4, right: 40, bottom: 4, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
-                        <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
-                        <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={90} />
-                        <Tooltip formatter={(v) => [`${v}%`, 'Caída']} />
-                        <Bar dataKey="cambio" radius={[0, 6, 6, 0]} fill={CHART_PALETTE.danger ?? '#ef4444'} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Tabla de comparación completa */}
-          {result.categoryComparisons.length > 0 && (
-            <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Comparación detallada por producto/categoría</h2>
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Dataset A</th>
-                      <th>Participación A</th>
-                      <th>Dataset B</th>
-                      <th>Participación B</th>
-                      <th>Variación</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.categoryComparisons.map((c) => (
-                      <tr key={c.name}>
-                        <td style={{ fontWeight: 600 }}>
-                          {c.onlyInA && <span style={{ fontSize: 10, background: '#dbeafe', color: '#1d4ed8', borderRadius: 4, padding: '1px 5px', marginRight: 4 }}>solo A</span>}
-                          {c.onlyInB && <span style={{ fontSize: 10, background: '#dcfce7', color: '#15803d', borderRadius: 4, padding: '1px 5px', marginRight: 4 }}>solo B</span>}
-                          {c.name}
-                        </td>
-                        <td>{c.totalA > 0 ? formatTooltipValue(c.totalA) : '—'}</td>
-                        <td style={{ color: '#6b7280' }}>{c.totalA > 0 ? `${c.shareA.toFixed(1)}%` : '—'}</td>
-                        <td>{c.totalB > 0 ? formatTooltipValue(c.totalB) : '—'}</td>
-                        <td style={{ color: '#6b7280' }}>{c.totalB > 0 ? `${c.shareB.toFixed(1)}%` : '—'}</td>
-                        <td>
-                          {!c.onlyInA && !c.onlyInB ? (
-                            <span style={{
-                              fontWeight: 700,
-                              color: c.direction === 'up' ? '#16a34a' : c.direction === 'down' ? '#dc2626' : '#6b7280',
-                            }}>
-                              {c.direction === 'up' ? '↑' : c.direction === 'down' ? '↓' : '→'}{' '}
-                              {c.diffPct > 0 ? '+' : ''}{c.diffPct.toFixed(1)}%
-                            </span>
-                          ) : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Insights automáticos */}
           {result.insights.length > 0 && (
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Insights de la comparación</h2>
+              <h2 className={styles.cardTitle}>Sugerencias para mejorar la venta comparada</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {displayedInsights.map((insight) => (
+                {result.insights.map((insight) => (
                   <InsightCard
                     key={insight.id}
                     insight={insight}
@@ -529,15 +374,6 @@ function ComparisonTab({ datasets }: { datasets: Dataset[] }) {
                   />
                 ))}
               </div>
-              {result.insights.length > 4 && (
-                <button
-                  className={styles.btnOutline}
-                  onClick={() => setShowAllInsights((p) => !p)}
-                  style={{ marginTop: 12, alignSelf: 'flex-start' }}
-                >
-                  {showAllInsights ? 'Ver menos' : `Ver todos (${result.insights.length - 4} más)`}
-                </button>
-              )}
             </div>
           )}
         </>
@@ -548,7 +384,7 @@ function ComparisonTab({ datasets }: { datasets: Dataset[] }) {
 
 // ─── Módulo principal de Ventas ───────────────────────────────────────────────
 
-type SalesTab = 'analisis' | 'insights' | 'comparacion' | 'personalizado';
+type SalesTab = 'analisis' | 'insights' | 'personalizado';
 
 export default function Sales() {
   const { getAuthorizedDatasets } = useDatasetContext();
@@ -682,11 +518,10 @@ export default function Sales() {
       {selectedDataset && analysis?.detectedColumns.monetary && (
         <>
           <div className={styles.tabs}>
-            {(['analisis', 'insights', 'comparacion', 'personalizado'] as SalesTab[]).map((t) => (
+            {(['analisis', 'insights', 'personalizado'] as SalesTab[]).map((t) => (
               <button key={t} className={`${styles.tab} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>
                 {t === 'analisis' ? 'Análisis'
                   : t === 'insights' ? `Insights (${analysis.insights.length})`
-                  : t === 'comparacion' ? 'Comparación'
                   : 'Análisis personalizado'}
               </button>
             ))}
@@ -907,6 +742,12 @@ export default function Sales() {
                     </button>
                   )}
 
+                  {datasets.length > 1 && (
+                    <div style={{ marginTop: 8 }}>
+                      <ComparisonTab datasets={datasets} />
+                    </div>
+                  )}
+
                   {/* Problemas detectados */}
                   {analysis.anomalies.length > 0 && (
                     <div className={styles.card}>
@@ -921,8 +762,11 @@ export default function Sales() {
                             <span style={{ fontSize: 18, flexShrink: 0 }}>
                               {a.type === 'spike' ? '📈' : a.type === 'drop' ? '📉' : '⚠️'}
                             </span>
-                            <div>
-                              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#111827' }}>
+                            <div style={{ width: '100%' }}>
+                              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: 0.3 }}>
+                                CSV: {selectedDataset?.name ?? 'Dataset actual'}
+                              </p>
+                              <p style={{ margin: '4px 0 0', fontSize: 13, fontWeight: 600, color: '#111827' }}>
                                 {a.type === 'spike' ? 'Pico inusual' : a.type === 'drop' ? 'Caída inusual' : 'Valor atípico'} — {a.label}
                               </p>
                               <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6b7280' }}>
@@ -938,9 +782,6 @@ export default function Sales() {
               )}
             </div>
           )}
-
-          {/* ── TAB COMPARACIÓN ── */}
-          {tab === 'comparacion' && <ComparisonTab datasets={datasets} />}
 
           {/* ── TAB ANÁLISIS PERSONALIZADO ── */}
           {tab === 'personalizado' && <CustomAnalysis dataset={selectedDataset} />}
